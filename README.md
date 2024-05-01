@@ -35,3 +35,9 @@ It also allows you to integrate custom validations for each endpoint using the I
 Initially, it is integrated with PostgresSQL and SQLServer via two generic implementations of the IRepository interface available in the AutoCRUD.Data.NpgSql and AutoCRUD.Data.SqlClient namespaces respectively. For this, AutoCRUD uses the Dapper package.
 
 To learn how to use it, please see the example repository called "api" on my github.
+
+
+*Package dependencies
+- Dapper Version="2.1.35"
+- Npgsql Version="8.0.2"
+- System.Data.SqlClient Version="4.8.6
