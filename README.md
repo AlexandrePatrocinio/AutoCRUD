@@ -10,7 +10,7 @@ Também permite integrar validações personalizadas para cada endpoint usando a
 
 Inicialmente ela possui integração com o postgresSQL et SQLServer através de duas implementações genéricas da interface IRepository disponíveis nos namespaces AutoCRUD.Data.NpgSql et AutoCRUD.Data.SqlClient respectivamente. Para isso, AutoCRUD utilisa o pacote Dapper.
 
-Para saber como usá-lo favor verificar o repositório de exemplo chamado "api" em meu github.
+Para saber como usá-lo favor verificar o repositório de exemplo chamado "api" (https://github.com/AlexandrePatrocinio/api) em meu github.
 
 ### Projeto
 Esta extensão foi inspirada no desafio que ocorreu no Brasil em 2023 chamado rinhabackend (https://github.com/zanfranceschi/rinha-de-backend-2023-q3)
@@ -26,7 +26,7 @@ Il vous permet également d'intégrer des validations personnalisées pour chaqu
 
 Initialement, il est intégré à PostgresSQL et SQLServer via deux implémentations génériques de l'interface IRepository disponibles dans les espaces de noms AutoCRUD.Data.NpgSql et AutoCRUD.Data.SqlClient respectivement. Pour cela, AutoCRUD utilise le package Dapper.
 
-Pour savoir comment l'utiliser, veuillez consulter l'exemple de référentiel appelé "api" sur mon github.
+Pour savoir comment l'utiliser, veuillez consulter l'exemple de référentiel appelé "api" (https://github.com/AlexandrePatrocinio/api) sur mon github.
 
 ### Projet
 Cet extension a été inspirée par le défi qui a eu lieu au Brésil en 2023 appelé rinhabackend (https://github.com/zanfranceschi/rinha-de-backend-2023-q3).
@@ -42,7 +42,7 @@ It also allows you to integrate custom validations for each endpoint using the I
 
 Initially, it is integrated with PostgresSQL and SQLServer via two generic implementations of the IRepository interface available in the AutoCRUD.Data.NpgSql and AutoCRUD.Data.SqlClient namespaces respectively. For this, AutoCRUD uses the Dapper package.
 
-To learn how to use it, please see the example repository called "api" on my github.
+To learn how to use it, please see the example repository called "api" (https://github.com/AlexandrePatrocinio/api) on my github.
 
 ### Project
 This extension was inspired by the challenge that occurred in Brazil in 2023 called rinhabackend (https://github.com/zanfranceschi/rinha-de-backend-2023-q3).
