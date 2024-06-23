@@ -48,8 +48,45 @@ To learn how to use it, please see the example repository called "api" on my git
 This extension was inspired by the challenge that occurred in Brazil in 2023 called rinhabackend (https://github.com/zanfranceschi/rinha-de-backend-2023-q3).
 I used the idea to easily generate an API that implements a CRUD automatically (hence the name) with the endpoints requested in the challenge.
 
+### Endpoints examples
 
-*Package dependencies
+POST http://domain.com/persons
+body
+{
+    "alias": "bri",
+    "name": "Fabricio Miranda Lins",
+    "birthdate": "2000-09-22T00:00:00",
+    "stack": [
+        "java",
+        "spring",
+        "oracle"
+    ]
+}
+
+PUT http://domain.com/persons
+body
+{
+    "id": "52d32def-ebb7-4b09-a38a-80b9061c44df",
+    "alias": "bri",
+    "name": "Fabrício Miranda Lins",
+    "birthdate": "2000-09-20T00:00:00",
+    "stack": [
+        "java",
+        "spring",
+        "oracle"
+    ]
+}
+
+GET http://domain.com/persons?t=fa
+
+GET http://domain.com/persons/52d32def-ebb7-4b09-a38a-80b9061c44df
+
+DELETE http://domain.com/persons/52d32def-ebb7-4b09-a38a-80b9061c44df
+
+GET http://domain.com/count-persons
+
+### Package dependencies
+
 - Dapper Version="2.1.35"
 - Npgsql Version="8.0.2"
 - System.Data.SqlClient Version="4.8.6
