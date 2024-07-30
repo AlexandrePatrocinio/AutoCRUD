@@ -25,19 +25,17 @@ public class SqlClientRepository<E> : IRepository<E> where E : IEntity {
 
         SearchColumnName = searchcolumnname ?? keyfieldname;
 
-        TableName ??= typeof(E).Name;
+        TableName = tablename ?? typeof(E).Name;
 
         var properties = typeof(E).GetProperties().Where((p)=> p.Name.ToLower() != SearchColumnName.ToLower() || p.Name.ToLower() == keyfieldname.ToLower());
 
         var arrayStringfields = properties.Where((p)=> p.PropertyType == typeof(String[]));
 
-        var fields = properties.Select((p)=> 
-            !arrayStringfields.Contains(p) ? 
-            p.Name : 
-            $"string_to_array(REPLACE(REPLACE({p.Name}, '{{',''), '}}',''), ',') AS {p.Name}"
-        );
+        var fields = properties.Select((p)=> p.Name);
 
         _propertiesSqlInfos.Add(TableName, (null, properties, String.Join(',', fields)));
+
+        SqlMapper.AddTypeHandler(new StringArrayTypeHandler());
     }
 
     public string TableName { get; private set; }
@@ -55,7 +53,8 @@ public class SqlClientRepository<E> : IRepository<E> where E : IEntity {
             
             using (var cmd = new SqlCommand($"SELECT COUNT(id) FROM {TableName}", connection))
             {
-                return (long)(await cmd.ExecuteScalarAsync() ?? 0);
+                var count = await cmd.ExecuteScalarAsync();
+                return Convert.ToInt64(count ?? 0);
             }
         }
     }
@@ -85,7 +84,7 @@ public class SqlClientRepository<E> : IRepository<E> where E : IEntity {
             string sql = @$"
                 SELECT {_propertiesSqlInfos?[TableName].fields}
                 FROM {TableName} 
-                WHERE {SearchColumnName} like '%' || @value || '%'";
+                WHERE {SearchColumnName} like '%' + @value + '%'";
 
             return await conn.QueryAsync<E?>(sql, new { value = value });
         }
@@ -130,7 +129,9 @@ public class SqlClientRepository<E> : IRepository<E> where E : IEntity {
             {
                 await connection.OpenAsync();
 
-                var rowsAffected = await connection.ExecuteAsync(GetSQLAsync(), data).ConfigureAwait(false);
+                var sql = GetSQLAsync();
+
+                var rowsAffected = await connection.ExecuteAsync(sql, data).ConfigureAwait(false);
 
                 return rowsAffected > 0;
                 
@@ -188,13 +189,13 @@ public class SqlClientRepository<E> : IRepository<E> where E : IEntity {
             var valuesupdate = String.Join(',', _propertiesSqlInfos[TableName].properties.Select((p)=> p.Name + chartemp1 + p.Name));
 
             var sBInsertUpdate = new StringBuilder(@$"
-            if not exists(Select 1 from {TableName} where {keyFieldName}=@value)
+            if not exists(Select 1 from {TableName} where {keyFieldName}=@{keyFieldName})
                 INSERT INTO {TableName}({fields})
                 VALUES(@{fields.Replace(",",",@")})
             else
                 UPDATE {TableName}
-                {valuesupdate}
-                where {keyFieldName}=@value",
+                set {valuesupdate}
+                where {keyFieldName}=@{keyFieldName}",
                 1152
             );
 
