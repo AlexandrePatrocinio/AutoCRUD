@@ -30,7 +30,7 @@ Pour savoir comment l'utiliser, veuillez consulter l'exemple de référentiel ap
 
 ### Projet
 Cet extension a été inspirée par le défi qui a eu lieu au Brésil en 2023 appelé rinhabackend (https://github.com/zanfranceschi/rinha-de-backend-2023-q3).
-J’ai utilisé l’idée pour générer facilement une API qui implémente un CRUD automatiquement (d’où le nom) avec les points de terminaison demandés dans le défi.
+J’ai utilisé l’idée pour générer facilement une API qui met en place un CRUD automatiquement (d’où le nom) avec les points de terminaison demandés dans le défi.
 
 *English (en-us)
 
