@@ -3,24 +3,26 @@ using AutoCRUD.Models;
 
 namespace AutoCRUD.Services;
 
-public interface IServiceAutoCRUDValidation<E> where E : IEntity
+public interface IServiceAutoCRUDValidation<E, I>
+where E : IEntity<I>
+where I : struct
 {
-    Task<(bool Valid, IEntity? Entity)> IsValidEntityAsync(IEntity Entity, IRepository<E> repository);
+    Task<(bool Valid, IEntity<I>? Entity)> IsValidEntityAsync(IEntity<I> Entity, IRepository<E, I> repository);
 
-    (bool Valid, Guid Guid) isValidID(string id, IRepository<E> repository);
+    (bool Valid, I Id) isValidID(string id, IRepository<E, I>pository);
 
-    (bool Valid, string SearchTerm) isSearchTermValid(string t, IRepository<E> repository);
+    (bool Valid, string SearchTerm) isSearchTermValid(string t, IRepository<E, I>pository);
 
-    Task<(bool Valid, IEntity? Entity)> isPostValidAsync(IEntity Entity, IRepository<E> repository);
+    Task<(bool Valid, IEntity<I>? Entity)> isPostValidAsync(IEntity<I> Entity, IRepository<E, I>pository);
 
-    Task<(bool Valid, IEntity? Entity)> isGetValidAsync(IEntity Entity, IRepository<E> repository);
+    Task<(bool Valid, IEntity<I>? Entity)> isGetValidAsync(IEntity<I> Entity, IRepository<E, I>pository);
 
-    Task<(bool Valid, IEntity? Entity)> isGetValidAsync(Guid guid, IRepository<E> repository);
+    Task<(bool Valid, IEntity<I>? Entity)> isGetValidAsync(I Id, IRepository<E, I>pository);
 
-    Task<(bool Valid, IEntity? Entity)> isPutValidAsync(IEntity Entity, IRepository<E> repository);
+    Task<(bool Valid, IEntity<I>? Entity)> isPutValidAsync(IEntity<I> Entity, IRepository<E, I>pository);
 
-    Task<(bool Valid, IEntity? Entity)> isDeleteValidAsync(IEntity Entity, IRepository<E> repository);
+    Task<(bool Valid, IEntity<I>? Entity)> isDeleteValidAsync(IEntity<I> Entity, IRepository<E, I>pository);
 
-    Task<(bool Valid, IEntity? Entity)> isDeleteValidAsync(Guid guid, IRepository<E> repository);
+    Task<(bool Valid, IEntity<I>? Entity)> isDeleteValidAsync(I Id, IRepository<E, I>pository);
 
 }

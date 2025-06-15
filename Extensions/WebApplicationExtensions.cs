@@ -9,7 +9,9 @@ namespace AutoCRUD.Extensions;
 
 public static class WebApplicationExtensionsExtensions
 {
-    public static WebApplication UseAutoCRUD<E>(this WebApplication app, string? defaultroute = null) where E : IEntity {
+    public static WebApplication UseAutoCRUD<E,I>(this WebApplication app, string? defaultroute = null)
+    where E : IEntity<I>
+    where I : struct{
 
         defaultroute = defaultroute ?? typeof(E).Name + "s";
 
@@ -19,8 +21,8 @@ public static class WebApplicationExtensionsExtensions
             defaultroute, 
             async Task<IResult> (
                 [FromBody]E entity, 
-                [FromServices]IRepository<E> repository, 
-                [FromServices]IServiceAutoCRUDValidation<E> serviceAutoCRUDvalidation) => {
+                [FromServices]IRepository<E,I> repository, 
+                [FromServices]IServiceAutoCRUDValidation<E,I> serviceAutoCRUDvalidation) => {
             
             var validation = await serviceAutoCRUDvalidation.IsValidEntityAsync(entity, repository);
             if(!validation.Valid) return Results.BadRequest(nameof(entity));
@@ -37,18 +39,18 @@ public static class WebApplicationExtensionsExtensions
             $"{defaultroute}/{{id}}", 
             async Task<IResult> (
                 string id, 
-                [FromServices]IRepository<E> repository, 
-                [FromServices]IServiceAutoCRUDValidation<E> serviceAutoCRUDvalidation) => {
+                [FromServices]IRepository<E,I> repository, 
+                [FromServices]IServiceAutoCRUDValidation<E,I> serviceAutoCRUDvalidation) => {
 
             var validationid = serviceAutoCRUDvalidation.isValidID(id, repository);
             if(!validationid.Valid) return Results.BadRequest(nameof(id));
 
-            var validation = await serviceAutoCRUDvalidation.isGetValidAsync(validationid.Guid, repository);
+            var validation = await serviceAutoCRUDvalidation.isGetValidAsync(validationid.Id, repository);
             if(!validation.Valid) return Results.UnprocessableEntity(nameof(id));
 
-            var Entity = validation.Entity ?? await repository.FindByIDAsync(validationid.Guid);
+            var Entity = validation.Entity ?? await repository.FindByIDAsync(validationid.Id);
             if (Entity is null)
-                return Results.NotFound(validationid.Guid);
+                return Results.NotFound(validationid.Id);
             else
                 return Results.Ok(Entity);
         });
@@ -57,8 +59,8 @@ public static class WebApplicationExtensionsExtensions
             defaultroute, 
             async Task<IResult> (
                 [FromBody]E entity, 
-                [FromServices]IRepository<E> repository, 
-                [FromServices]IServiceAutoCRUDValidation<E> serviceAutoCRUDvalidation) => {
+                [FromServices]IRepository<E,I> repository, 
+                [FromServices]IServiceAutoCRUDValidation<E,I> serviceAutoCRUDvalidation) => {
 
             var validation = await serviceAutoCRUDvalidation.IsValidEntityAsync(entity, repository);
             if(!validation.Valid) return Results.BadRequest(nameof(entity));
@@ -75,20 +77,20 @@ public static class WebApplicationExtensionsExtensions
             $"{defaultroute}/{{id}}",
             async Task<IResult>  (
                 string id,
-                [FromServices]IRepository<E> repository,
-                [FromServices]IServiceAutoCRUDValidation<E> serviceAutoCRUDvalidation) => {
+                [FromServices]IRepository<E,I> repository,
+                [FromServices]IServiceAutoCRUDValidation<E,I> serviceAutoCRUDvalidation) => {
 
             var validationid = serviceAutoCRUDvalidation.isValidID(id, repository);
             if(!validationid.Valid) return Results.BadRequest(nameof(id));
 
-            var validation = await serviceAutoCRUDvalidation.isDeleteValidAsync(validationid.Guid, repository);
+            var validation = await serviceAutoCRUDvalidation.isDeleteValidAsync(validationid.Id, repository);
             if(!validation.Valid) return Results.UnprocessableEntity(nameof(id));
 
-            var Entity = validation.Entity ?? await repository.FindByIDAsync(validationid.Guid);
+            var Entity = validation.Entity ?? await repository.FindByIDAsync(validationid.Id);
             if (Entity is null)
-                return Results.NotFound(validationid.Guid);
+                return Results.NotFound(validationid.Id);
             else {
-                _ = repository.DeleteAsync(validationid.Guid);
+                _ = repository.DeleteAsync(validationid.Id);
                 return Results.Ok(Entity);
             }
         });
@@ -97,8 +99,8 @@ public static class WebApplicationExtensionsExtensions
             defaultroute, 
             async Task<IResult> (
                 [FromBody]E entity, 
-                [FromServices]IRepository<E> repository, 
-                [FromServices]IServiceAutoCRUDValidation<E> serviceAutoCRUDvalidation) => {
+                [FromServices]IRepository<E,I> repository, 
+                [FromServices]IServiceAutoCRUDValidation<E,I> serviceAutoCRUDvalidation) => {
 
             var validation = await serviceAutoCRUDvalidation.IsValidEntityAsync(entity, repository);
             if(!validation.Valid) return Results.BadRequest(nameof(entity));
@@ -116,25 +118,31 @@ public static class WebApplicationExtensionsExtensions
         });
 
         app.MapGet(
-            defaultroute,  
+            defaultroute,
             async Task<IResult> (
-                [FromQuery]string t, 
-                [FromServices]IRepository<E> repository, 
-                [FromServices]IServiceAutoCRUDValidation<E> serviceAutoCRUDvalidation) => {
+                [FromServices]IRepository<E,I> repository, 
+                [FromServices]IServiceAutoCRUDValidation<E,I> serviceAutoCRUDvalidation,
+                [FromQuery] string? t,
+                [FromQuery] int pn = 1,
+                [FromQuery] int ps = 25) =>
+            {
+                if (!string.IsNullOrWhiteSpace(t))
+                {
+                    var validation = serviceAutoCRUDvalidation.isSearchTermValid(t, repository);
+                    if (!validation.Valid) return Results.BadRequest(nameof(t));
+                }
 
-            var validation = serviceAutoCRUDvalidation.isSearchTermValid(t, repository);
-            if(validation.Valid) return Results.BadRequest(nameof(t));
-
-            var entitys = await repository.SearchAsync(validation.SearchTerm ?? t);
-            if (entitys is null)
-                return Results.NotFound(validation.SearchTerm ?? t);
-            else
-                return Results.Ok(entitys);
-        });
+                var entitys = await repository.SearchAsync(t, pn, ps);
+                if (entitys is null)
+                    return Results.NotFound(t);
+                else
+                    return Results.Ok(entitys);
+            }
+        );
 
         app.MapGet(
             $"/count-{defaultroute.TrimStart('/')}", 
-            async Task<IResult> ([FromServices]IRepository<E> repository) => 
+            async Task<IResult> ([FromServices]IRepository<E,I> repository) => 
             
             Results.Ok(await repository.CountAsync()));
 
