@@ -21,11 +21,8 @@ public class NpgSqlBulkCopy : IDisposable {
         string? query = null;
         try
         {
-            if (string.IsNullOrEmpty(DestinationTableName))
-            {
-                throw new ArgumentNullException("DestinationTableName", "Destination table must be set");
-            }
-
+            ArgumentNullException.ThrowIfNull(DestinationTableName, nameof(DestinationTableName));
+            
             PropertyInfo[] properties = typeof(T).GetProperties();
             int colCount = properties.Length;
 
@@ -52,43 +49,45 @@ public class NpgSqlBulkCopy : IDisposable {
                         }
                         else
                         {
+                            var value = properties[i].GetValue(t);
+
                             switch (types[i])
                             {
                                 case NpgsqlDbType.Uuid:
-                                    writer.Write((Guid)properties[i].GetValue(t), types[i]);
+                                    writer.Write(value is not null ? (Guid)value : Guid.Empty, types[i]);
                                     break;
                                 case NpgsqlDbType.Bigint:
-                                    writer.Write((long)properties[i].GetValue(t), types[i]);
+                                    writer.Write(value is not null ? (long)value : 0, types[i]);
                                     break;
                                 case NpgsqlDbType.Integer:
-                                    writer.Write((int)properties[i].GetValue(t), types[i]);
+                                    writer.Write(value is not null ? (int)value : 0, types[i]);
                                     break;
                                 case NpgsqlDbType.Smallint:
-                                    writer.Write((short)properties[i].GetValue(t), types[i]);
-                                    break;                                                                        
+                                    writer.Write(value is not null ? (short)value : 0, types[i]);
+                                    break;
                                 case NpgsqlDbType.Char:
-                                    writer.Write((char)properties[i].GetValue(t), types[i]);
+                                    writer.Write(value is not null ? (char)value : '\0', types[i]);
                                     break;
                                 case NpgsqlDbType.Varchar:
-                                    writer.Write((String)properties[i].GetValue(t), types[i]);
+                                    writer.Write(value?.ToString(), types[i]);
                                     break;
                                 case NpgsqlDbType.Bit:
                                 case NpgsqlDbType.Boolean:
-                                    writer.Write((bool)properties[i].GetValue(t), types[i]);
+                                    writer.Write(value is not null ? (bool)value : false, types[i]);
                                     break;
                                 case NpgsqlDbType.Date:
-                                    writer.Write((DateTime)properties[i].GetValue(t), types[i]);
+                                    writer.Write(value is not null ? (DateTime)value : DateTime.MinValue, types[i]);
                                     break;
                                 case NpgsqlDbType.Double:
                                 case NpgsqlDbType.Money:
                                 case NpgsqlDbType.Real:
-                                    writer.Write((float)properties[i].GetValue(t), types[i]);
+                                    writer.Write(value is not null ? (float)value : 0f, types[i]);
                                     break;
                                 case NpgsqlTypes.NpgsqlDbType.Array:
                                 case NpgsqlTypes.NpgsqlDbType.Text:
-                                    writer.Write(properties[i].GetValue(t), NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text);                                               
+                                    writer.Write(properties[i].GetValue(t), NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text);
                                     break;
-                                // ... other cases for different types
+                                    // ... other cases for different types
                             }
                         }
                     }
