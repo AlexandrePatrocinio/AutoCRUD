@@ -10,6 +10,6 @@ public class StringArrayTypeHandler : SqlMapper.TypeHandler<string[]>
 
     public override string[]? Parse(object value)
     {
-        return value?.ToString().Split(',');
+        return (value?.ToString() ?? string.Empty).Split(',');
     }
 }
