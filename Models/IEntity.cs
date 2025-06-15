@@ -1,6 +1,6 @@
 namespace AutoCRUD.Models;
 
-public interface IEntity
+public interface IEntity<I> where I : struct
 {
-    Guid Id { get; set; }    
+    I Id { get; set; }    
 }
