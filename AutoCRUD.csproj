@@ -3,7 +3,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>0.6.0</Version>
+    <Version>0.7.0</Version>
     <Authors>Alexandre Patrocinio</Authors>
     <PackageId>AutoCRUD</PackageId>
     <Description>An extension for automatically creating a CRUD for minimal API's in .NET 8</Description>

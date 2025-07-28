@@ -28,7 +28,7 @@ public static class IServiceCollectionExtensions
         where E : IEntity<I>
         where I : struct {
 
-        services.AddSingleton<IRepository<E,I>, NpgSqlRepository<E,I>>(
+        services.AddScoped<IRepository<E,I>, NpgSqlRepository<E,I>>(
             (_) => new NpgSqlRepository<E,I>(tablename, keyfieldname, GetConnectionString, searchcolumnname)
         );
 
@@ -44,7 +44,7 @@ public static class IServiceCollectionExtensions
         where E : IEntity<I>
         where I : struct {        
 
-        services.AddSingleton<IRepository<E,I>, SqlClientRepository<E,I>>(
+        services.AddScoped<IRepository<E,I>, SqlClientRepository<E,I>>(
             (_) => new SqlClientRepository<E,I>(tablename, keyfieldname, GetConnectionString, searchcolumnname)
         );
 
