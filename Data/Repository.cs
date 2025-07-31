@@ -1,8 +1,7 @@
-using System.Data;
+using System.Data.Common;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using AutoCRUD.Models;
-using System.Data.Common;
 using Dapper;
 
 namespace AutoCRUD.Data;

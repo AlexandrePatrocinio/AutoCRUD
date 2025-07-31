@@ -1,6 +1,6 @@
 using System.Reflection;
 using AutoCRUD.Models;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using Dapper;
 using System.Text;
 using System.Data;
